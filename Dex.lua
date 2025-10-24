@@ -11080,7 +11080,9 @@ Main = (function()
 		for i, v in Assets do
 			local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".png.txt")
 			task.spawn(function()
-				writefile("customassets/" .. v ..".png", crypt.base64decode(src))
+				if not isfile("customassets/" .. v ..".png") then
+					writefile("customassets/" .. v ..".png", crypt.base64decode(src))
+				end
 			end)
 		end
 	end
