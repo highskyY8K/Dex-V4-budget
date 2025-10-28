@@ -25,7 +25,7 @@ local service = setmetatable({}, {
 })
 
 local function writeimage(assetid)
-	return "customassets/" .. assetid .. ".png"
+	return "dex/assets/" .. assetid .. ".png"
 end
 
 -- prevent environment implosion from references
@@ -1423,6 +1423,7 @@ local EmbeddedModules = {
 							if not success or not source then source = ("-- DEX - %s failed to decompile %s"):format(env.executor, v.Obj.ClassName) end
 							local fileName = ("%i.%s.%s.Source.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
 							env.writefile(fileName, source)
+							env.writefile("dex/saved/" .. fileName, source)
 							task.wait(0.2)
 						end
 					end
@@ -1435,6 +1436,7 @@ local EmbeddedModules = {
 							if success and type(bytecode) == "string" then
 								local fileName = ("%i.%s.%s.Bytecode.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
 								env.writefile(fileName, bytecode)
+								env.writefile("dex/saved/" .. fileName, bytecode)
 								task.wait(0.2)
 							end
 						end
@@ -5050,6 +5052,12 @@ local EmbeddedModules = {
 			end)()
 
 			Lib.IconMap = (function()
+				local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/114851699900089.txt")
+				if not isfile("dex/assets/114851699900089.png") then
+					local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/114851699900089.txt")
+					writefile("dex/assets/114851699900089.png", crypt.base64decode(src))
+				end
+				
 				local funcs = {}
 				local _MapId, _Icons = (getcustomasset(writeimage("114851699900089"))), {
 					Accessory = 1,
@@ -11075,13 +11083,13 @@ Main = (function()
 	end
 
 	Main.FetchImages = function()
-		local Assets = {114851699900089, 5642383285, 5034718129, 5642310344, 5642383285, 5642383285, 5034718180, 5054663650, 5034768003, 1427967925, 5060023708, 5034768003, 5034768003, 6234266378, 6401617475, 6425281788, 1281023007, 1072518406, 1072518502, 2764171053, 1427967925, 6578871732, 6578933307, 6579106223, 6511490623, 6579106223}
+		local Assets = {5448127505, 114851699900089, 5642383285, 5034718129, 5642310344, 5642383285, 5642383285, 5034718180, 5054663650, 5034768003, 1427967925, 5060023708, 5034768003, 5034768003, 6234266378, 6401617475, 6425281788, 1281023007, 1072518406, 1072518502, 2764171053, 1427967925, 6578871732, 6578933307, 6579106223, 6511490623, 6579106223}
 
 		for i, v in Assets do
-			local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".png.txt")
+			local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".txt")
 			task.spawn(function()
-				if not isfile("customassets/" .. v ..".png") then
-					writefile("customassets/" .. v ..".png", crypt.base64decode(src))
+				if not isfile("dex/assets/" .. v ..".png") then
+					writefile("dex/assets/" .. v ..".png", crypt.base64decode(src))
 				end
 			end)
 		end
@@ -11501,6 +11509,17 @@ Main = (function()
 	end
 
 	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
+		local Assets = {2764171053, 1427967925, 6511490623, 6579106223}
+
+		for i, v in Assets do
+			local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".txt")
+			task.spawn(function()
+				if not isfile("dex/assets/" .. v ..".png") then
+					writefile("dex/assets/" .. v ..".png", crypt.base64decode(src))
+				end
+			end)
+		end
+		
 		local gui = create({
 			{1,"ScreenGui",{Name="Intro",}},
 			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
@@ -11905,7 +11924,7 @@ Main = (function()
 		--Main.IncompatibleTest()
 
 		-- Init icons
-		Main.MiscIcons = Lib.IconMap.new(getcustomasset(writeimage("6511490623")),256,256,16,16) -- 6579106223 --DETECTED "http://www.roblox.com/asset/?id=6511490623"
+		Main.MiscIcons = Lib.IconMap.new(getcustomasset(writeimage("6511490623")),256,256,16,16) -- 6579106223
 
 		Main.MiscIcons:SetDict({
 			["Reference"] = 0;
