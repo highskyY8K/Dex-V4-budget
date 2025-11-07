@@ -11084,17 +11084,20 @@ Main = (function()
 
 	Main.FetchImages = function(intro)
 		local Assets = {5448127505, 114851699900089, 5642383285, 5034718129, 5642310344, 5642383285, 5642383285, 5034718180, 5054663650, 5034768003, 1427967925, 5060023708, 5034768003, 5034768003, 6234266378, 6401617475, 6425281788, 1281023007, 1072518406, 1072518502, 2764171053, 1427967925, 6578871732, 6578933307, 6579106223, 6511490623, 6579106223}
-
+		
 		for i, v in Assets do
-			local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".txt")
+			getgenv().asset = v
 			task.spawn(function()
-				if not isfile("dex/assets/" .. v ..".png") then
-					writefile("dex/assets/" .. v ..".png", crypt.base64decode(src))
+				if not isfile("dex/assets/" .. getgenv().asset ..".png") then
+					local src = game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. getgenv().asset .. ".txt")
+					writefile("dex/assets/" .. getgenv().asset ..".png", crypt.base64decode(src))
 				end
 				
 				intro.SetProgress("Fetching Images",0.6+(i/200))
 			end)
 		end
+		
+		getgenv().asset = nil
 	end
 
 	Main.LoadModules = function()
