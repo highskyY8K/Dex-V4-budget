@@ -463,7 +463,7 @@ local EmbeddedModules = {
 				end
 
 				recur(nodes[game],1)
-
+	
 				-- Nil Instances
 				if env.getnilinstances then
 					if not (isSearching and not searchResults[nilNode]) then
@@ -11203,6 +11203,31 @@ Main = (function()
 		env.executor = type(identifyexecutor) == "function" and tostring(identifyexecutor()) or "Your executor"
 
 		Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
+
+		--Luau functions
+		
+		if not env.getinstances then
+			env.getinstances = function()
+				return game:GetDescendants()
+			end
+		end
+
+		if not env.getnilinstances then
+			env.getnilinstances = function()
+				local t = {}
+				for _, v in ipairs(env.getinstances()) do
+					local success, result = pcall(function()
+						return v.Parent == nil
+					end)
+
+					if not result then
+						table.insert(t, v)
+					end
+				end
+
+				return t
+			end
+		end
 
 		setmetatable(env, nil)
 	end
