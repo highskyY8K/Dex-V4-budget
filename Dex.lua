@@ -16,7 +16,6 @@
 	Dex is a debugging suite designed to help the user debug games and find any potential vulnerabilities.
 ]]
 
-
 local nodes = {}
 local selection
 
@@ -16556,6 +16555,32 @@ Main = (function()
 		return moduleData
 	end
 
+	Main.FetchImages = function(intro) --I could not think of a better way to do this.
+		local assets = {
+			5448127505, 114851699900089, 5642383285, 5034718129, 5642310344, 5642383285,
+			5642383285, 5034718180, 5054663650, 5034768003, 1427967925, 5060023708,
+			5034768003, 5034768003, 6234266378, 6401617475, 6425281788, 1281023007,
+			1072518406, 1072518502, 2764171053, 1427967925, 6578871732, 6578933307,
+			6579106223, 6511490623, 6579106223, 483448923, 71826111118631, 82111472977628,
+			114851699900089, 135148380892747
+		}
+
+		for i, v in ipairs(assets) do
+			task.spawn(function()
+				local path = "dex/assets/" .. v .. ".png"
+				if not isfile(path) then
+					local url = "https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Image%20Assets/" .. v .. ".txt"
+					local success, src = pcall(game.HttpGet, game, url)
+					if success and src then
+						local decoded = crypt.base64decode(src)
+						writefile(path, decoded)
+					end
+				end
+				intro.SetProgress("Fetching Images", 0.6 + (i / 200))
+			end)
+		end
+	end
+	
 	Main.LoadModules = function()
 		for i,v in pairs(Main.ModuleList) do
 			local s,e = pcall(Main.LoadModule,v)
@@ -17669,6 +17694,11 @@ Main = (function()
 			env.writefile("dex/rbx_api.dat",Main.RawAPI)
 			env.writefile("dex/rbx_rmd.dat",Main.RawRMD)
 		end
+
+		-- Load the images
+		intro.SetProgress("Fetching Images",0.6)
+		Main.FetchImages(intro)
+		Lib.FastWait()
 
 		-- Load other modules
 		intro.SetProgress("Loading Modules",0.75)
