@@ -32,12 +32,12 @@ local function ImageAsset(Id)
 		
 		if Worked then
 			writefile("dex/assets/" .. Id ..".png", crypt.base64decode(Src))
-			return "dex/assets/" .. Id .. ".png"
+			return getcustomasset("dex/assets/" .. Id .. ".png")
 		else
 			return "rbxassetid://" .. Id --Ur cooked.
 		end
 	else
-		return "dex/assets/" .. Id .. ".png"
+		return getcustomasset("dex/assets/" .. Id .. ".png")
 	end
 end
 
@@ -6442,7 +6442,7 @@ return search]]
 							["VelocityMotor"] = 34;["WedgePart"] = 1;["Weld"] = 34; ["Workspace"] = 19;
 						}
 					},
-					Vanilla3 = {
+					Vanilla3 = { 
 						MapId = 114851699900089, IconSize = 32, Witdh = 25, Height = 25,
 						Icons = {
 							Accessory = 1, Accoutrement = 2, Actor = 3, AdGui = 4, AdPortal = 5, AdService = 6, AdvancedDragger = 7, AirController = 8, AlignOrientation = 9,
@@ -17217,13 +17217,13 @@ Main = (function()
 			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
 			{3,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
 			{4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="Dex RE",TextColor3=Color3.new(1,1,1),TextSize=50,TextTransparency=1,}},
+			{5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="Dex",TextColor3=Color3.new(1,1,1),TextSize=50,TextTransparency=1,}},
 			{6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Ultimate Debugging Suite",TextColor3=Color3.new(1,1,1),TextSize=18,TextTransparency=1,}},
 			{7,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Color3.new(1,1,1),TextSize=14,TextTransparency=1,}},
 			{8,"Frame",{BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
 			{9,"Frame",{BackgroundColor3=Color3.new(0.2392156869173,0.56078433990479,0.86274510622025),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
 			{10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image=ImageAsset(2764171053),ImageColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
-			{11,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by Tesker103",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
+			{11,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by HighskyY8K",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
 			{12,"UIGradient",{Parent={11},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
 			{13,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Version",Parent={2},Position=UDim2.new(1,-110,1,-35),Size=UDim2.new(0,105,0,20),Text=Main.Version,TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
 			{14,"UIGradient",{Parent={13},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
@@ -17570,6 +17570,39 @@ Main = (function()
 		Main.CreateApp({Name = "Data Explorer", IconMap = Main.LargeIcons, Icon = "Honey", Window = DataExplorer.Window})
 
 		Main.CreateApp({Name = "Debugging Interface", IconMap = Main.LargeIcons, Icon = "ScriptEdit", Window = DebugExplorer.Window})
+		
+		local safemodeon = nil
+		Main.CreateApp({Name = "Safe Mode", IconMap = Main.LargeIcons, Icon = "ScriptEdit", OnClick = function(callback)
+			if callback then
+				safemodeon = true
+				do
+					local LocalPlayer = service.Players.LocalPlayer
+
+					local PlayerScripts = LocalPlayer:FindFirstChild("PlayerScripts")
+					if PlayerScripts then
+						local NewPlayerScripts = Instance.new("Folder")
+						NewPlayerScripts.Parent = LocalPlayer
+						NewPlayerScripts.Name = "PlayerScripts"
+
+						for _, v in PlayerScripts:GetChildren() do
+							if v.Name ~= "PlayerScripts" then
+								v.Parent = NewPlayerScripts
+							end
+						end
+					end
+
+					loadstring(game:HttpGet("https://pastefy.app/qH3uJShw/raw"))()
+					LocalPlayer:Kick("\n[SAFEMODE] Pausing Roblox engine..\nPlease do NOT leave")
+					service.RunService.RenderStepped:Wait()
+					service.RunService:Set3dRenderingEnabled(true)
+					task.delay(10, service.GuiService.ClearError, service.GuiService)
+					PlayerScripts.Parent = LocalPlayer
+				end
+			else
+				if queue_on_teleport then queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/highskyY8K/Dex-V4-budget/refs/heads/main/Dex.lua"))()]]) end
+				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, service.Players.LocalPlayer)
+			end
+		end})
 
 		Lib.ShowGui(gui)
 	end
@@ -17607,7 +17640,7 @@ Main = (function()
 		--Main.IncompatibleTest()
 
 		-- Init icons
-		Main.MiscIcons = Lib.IconMap.new("http://www.roblox.com/asset/?id=6511490623",256,256,16,16) -- 6579106223
+		Main.MiscIcons = Lib.IconMap.new(ImageAsset(6511490623),256,256,16,16) -- 6579106223
 
 		Main.MiscIcons:SetDict({
 			["Reference"] = 0;
