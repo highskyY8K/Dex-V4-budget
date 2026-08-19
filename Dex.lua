@@ -10,7 +10,7 @@
     --
     Dex V4:Budget
     Modified by highskyY8k
-    Supports low s/UNC executors
+    Supports low s/UNC executors + Extra features.
     Removed the detection issues (hopefully.. well this works on a game with anti dex so yea it should work!)
     
 	Dex is a debugging suite designed to help the user debug games and find any potential vulnerabilities.
