@@ -101,7 +101,7 @@ local EmbeddedModules = {
 			SettingsWindow = Apps.SettingsWindow
 			Notebook = Apps.Notebook
 			
-			if getconnections then --This obviously isn't possible xd
+			if getconnections and game:FindFirstChild("ServerScriptService") and game:FindFirstChild("ServerStorage") then --This obviously isn't possible xd
 				local ShamxD = {}
 				local a = getconnections(game.ServerScriptService.ChildAdded)
 				local b = getconnections(game.ServerStorage.ChildAdded)
