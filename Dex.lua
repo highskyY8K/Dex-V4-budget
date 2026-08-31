@@ -5683,7 +5683,8 @@ return search]]
 										end
 									end
 								else
-									source = source .. "-- Reason: The script is not running on client. (attempt to decompile ServerScript or 'Script' with RunContext Server)\n"
+									local first, rest = source:match("([^\n]*)(.*)")
+									source = first .. "\n-- Reason: The script is not running on client. (attempt to decompile ServerScript or 'Script' with RunContext Server)" .. rest
 								end
 							elseif not env.isdecompile() then
 								source = source .. "-- Reason: Your executor does not support decompiler. (missing 'decompile' function and 'getscriptbytecode' function as fallback)\n"
