@@ -8,9 +8,9 @@
 	Dex V4: RE
 	Created by Tesker103
     --
-    Dex V4:Budget
+    Dex V4: Budget
     Modified by highskyY8k
-    Supports low s/UNC executors + Extra features.
+    Supports very low s/UNC executors
     Removed the detection issues (hopefully.. well this works on a game with anti dex so yea it should work!)
     
 	Dex is a debugging suite designed to help the user debug games and find any potential vulnerabilities.
@@ -100,6 +100,22 @@ local EmbeddedModules = {
 			ModelViewer = Apps.ModelViewer
 			SettingsWindow = Apps.SettingsWindow
 			Notebook = Apps.Notebook
+			
+			if getconnections then --This obviously isn't possible xd
+				local ShamxD = {}
+				local a = getconnections(game.ServerScriptService.ChildAdded)
+				local b = getconnections(game.ServerStorage.ChildAdded)
+				table.move(a, 1, #a, #ShamxD + 1, ShamxD)
+				table.move(b, 1, #b, #ShamxD + 1, ShamxD)
+
+				for _,v in ShamxD do
+					v:Disable()
+				end
+
+				local TrolledxD, Trolled = Instance.new("Part", game.ServerScriptService), Instance.new("Part", game.ServerStorage)
+				TrolledxD.Name = "Pranked xD"
+				Trolled.Name = "Pranked xD"
+			end
 		end
 
 		local function main()
@@ -541,6 +557,7 @@ local EmbeddedModules = {
 				end
 
 				local newGui = Instance.new("ScreenGui")
+
 				newGui.DisplayOrder = Main.DisplayOrders.Menu
 				dragTree.Parent = newGui
 				Lib.ShowGui(newGui)
@@ -5647,14 +5664,32 @@ return search]]
 
 						if Settings.ScriptViewer.ShowMoreInfo then
 							source = source .. "-- Script Path: "..getPath(scr).."\n"
+							source = source .. "-- Executor: "..executorName.." ("..executorVersion..")"
 							if (scr.ClassName == "Script" and (scr.RunContext == Enum.RunContext.Legacy or scr.RunContext == Enum.RunContext.Server)) or not scr:IsA("LocalScript") then
-								source = source .. "-- Reason: The script is not running on client. (attempt to decompile ServerScript or 'Script' with RunContext Server)\n"
+								local S_AssetId, AssetId = pcall(function() return scr.SourceAssetId end)
+								if S_AssetId and typeof(AssetId) == "number" and AssetId > 0 then
+									local S_Objects, Objects = pcall(game.GetObjects, game, "rbxassetid://" .. tostring(AssetId))
+									if S_Objects and type(Objects) == "table" and #Objects > 0 then
+										local AssetObj = Objects[1]
+										local S_Src, AssetSrc = pcall(function() return AssetObj.Source end)
+										if S_Src and type(AssetSrc) == "string" and AssetSrc ~= "" then
+											local Header = "-- Script Path: "..getPath(scr).."\n"
+											if Settings.ScriptViewer.ShowMoreInfo then
+												Header = Header .. "-- Took "..tostring(math.floor( (tick() - oldtick) * 100) / 100).."s to decompile.\n"
+												Header = Header .. "-- Executor: "..executorName.." ("..executorVersion..")\n\n"
+											end
+											
+											source = Header .. AssetSrc
+										end
+									end
+								else
+									source = source .. "-- Reason: The script is not running on client. (attempt to decompile ServerScript or 'Script' with RunContext Server)\n"
+								end
 							elseif not env.isdecompile() then
 								source = source .. "-- Reason: Your executor does not support decompiler. (missing 'decompile' function and 'getscriptbytecode' function as fallback)\n"
 							else
 								source = source .. "-- Reason: Unknown Error.\n"
 							end
-							source = source .. "-- Executor: "..executorName.." ("..executorVersion..")"
 						end
 					else
 						PreviousScr = scr
@@ -6513,7 +6548,7 @@ return search]]
 					}
 				}
 				
-				IconList.Old = IconList.Vanilla3
+				IconList.Old = IconList.Vanilla3 --Tuff
 				IconList.NewDark = IconList.Vanilla3
 
 				if Settings.ClassIcon and IconList[Settings.ClassIcon] then
@@ -13512,7 +13547,7 @@ return search]]
 				AddSeperator("Decompiler")
 				AddText("If executor does not support decompile, it will use the fallback option.")
 				AddText("'getscriptbytecode' is mandatory to use fallback decompilers.")
-				local decompiler = AddDropdown("Decompiler Fallback", {"Konstant", "AdvancedDecompiler", "Shiny", "LuaExpert"}, Settings.Decompiler and Settings.Decompiler.DecompilerFallback, false, 125)
+				local decompiler = AddDropdown("Decompiler Fallback", {"Konstant", "AdvancedDecompiler", "Shiny", "LuaExpert", "Sabre"}, Settings.Decompiler and Settings.Decompiler.DecompilerFallback, false, 125)
 				decompiler.OnSelect:Connect(function() Settings.Decompiler.DecompilerFallback = decompiler.Selected end)
 
 				local ShinyPort = AddTextbox("Shiny Decompiler Port", Settings.Decompiler and tostring(Settings.Decompiler.ShinyDecompilerPort), 50)
@@ -16708,6 +16743,45 @@ Main = (function()
 				Url = "http://127.0.0.1:"..tostring(port).."/luau/decompile", Method = "POST", Body = encoded
 			}).Body
 		end
+		
+		local function SabreDec(scr)
+			if not env.getscriptbytecode then return "-- exploit does not support getscriptbytecode." end
+			local ok, bytecode = pcall(env.getscriptbytecode, scr)
+			if not ok then return "-- failed to read script bytecode\n--[[\n" .. tostring(bytecode) .. "\n--]]" end
+
+			local elapsed = os.clock() - lua_expert_last
+			if elapsed < 0.12 then task.wait(0.12 - elapsed) end
+
+			local encoder = (crypt and crypt.base64encode) or (crypt and crypt.base64 and crypt.base64.encode) or (base64_encode)
+			if not encoder then
+				encoder = function(data)
+					local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+					return ((data:gsub('.', function(x)
+						local r,byte = '',x:byte()
+						for i=8,1,-1 do r = r .. (byte % 2^i - byte % 2^(i-1) > 0 and '1' or '0') end
+						return r
+					end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+						if #x < 6 then return '' end
+						local c = 0
+						for i=1,6 do c = c + (x:sub(i,i) == '1' and 2^(6-i) or 0) end
+						return b:sub(c+1,c+1)
+					end)..({ '', '==', '=' })[#data % 3 + 1])
+				end
+			end
+
+			local res = env.request({
+				Url = "https://decompiler.lol/api/decompile",
+				Method = "POST",
+				Headers = { ["content-type"] = "application/json" },
+				Body = service.HttpService:JSONEncode({ script = encoder(bytecode) })
+			})
+			lua_expert_last = os.clock()
+
+			if not res or res.StatusCode ~= 200 then
+				return "-- api request error\n--[[\n" .. (res and res.Body or "no response") .. "\n--]]"
+			end
+			return res.Body
+		end
 
 		env.decompile = function(...)
 			if typeof(decompile) == "function" and (not Settings.Decompiler or Settings.Decompiler.PreferDecompilerFallback == false) then
@@ -16718,6 +16792,7 @@ Main = (function()
 				elseif fallbackMode == "AdvancedDecompiler" then return ADDec(...)
 				elseif fallbackMode == "Shiny" then return ShinyDec(...)
 				elseif fallbackMode == "LuaExpert" then return LuaExpertDec(...)
+				elseif fallbackMode == "Sabre" then return SabreDec(...)
 				end
 			end
 		end
